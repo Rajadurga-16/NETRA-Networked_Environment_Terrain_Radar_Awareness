@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NETRA — Mine Safety Command Center</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>NETRA</h1>
+      <span>Mine Safety Command Center</span>
+    </div>
+    <div id="systemMode" class="mode-badge mode-normal">NORMAL</div>
+  </header>
+
+  <main class="grid">
+
+    <section class="panel map-panel">
+      <h2>Live Digital Mine Map</h2>
+      <canvas id="mineMap" width="600" height="420"></canvas>
+      <div class="legend">
+        <span><i class="dot dot-a"></i> Vehicle A (REAL)</span>
+        <span><i class="dot dot-b"></i> Vehicle B (SIMULATED)</span>
+        <span><i class="dot dot-zone"></i> Risk Zone</span>
+        <span><i class="dot dot-hist"></i> Past Risk Event (memory)</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Vehicle A <small class="tag tag-real">REAL</small></h2>
+      <table class="kv" id="vehicleATable">
+        <tr><td>GPS</td><td id="aGps">-</td></tr>
+        <tr><td>Ultrasonic</td><td id="aRadar">-</td></tr>
+        <tr><td>Obstacle</td><td id="aRadarTarget">-</td></tr>
+        <tr><td>Speed</td><td id="aSpeed">-</td></tr>
+        <tr><td>Heading</td><td id="aHeading">-</td></tr>
+        <tr><td>Link</td><td id="aLink">-</td></tr>
+        <tr><td>Driving</td><td id="aDriving">-</td></tr>
+      </table>
+      <div class="controls drive-controls">
+        <button id="driveToggle" class="drive-btn drive-stopped">▶ Start Driving</button>
+        <div class="drive-note">Motors stay stopped whenever offline, risk is CRITICAL, or an
+          obstacle is within range - this button only grants permission, it never
+          forces movement.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Vehicle B <small class="tag tag-sim">SIMULATED</small></h2>
+      <table class="kv">
+        <tr><td>Mode</td><td id="bMode">-</td></tr>
+        <tr><td>Distance to A</td><td id="bDistance">-</td></tr>
+        <tr><td>Proximity severity</td><td id="bSeverity">-</td></tr>
+        <tr><td>Movement</td><td id="bMovement">-</td></tr>
+        <tr><td>Speed</td><td id="bSpeed">-</td></tr>
+        <tr><td>Heading</td><td id="bHeading">-</td></tr>
+        <tr><td>Online</td><td id="bOnline">-</td></tr>
+      </table>
+
+      <div class="controls">
+        <label>Mode:
+          <select id="modeSelect">
+            <option value="MANUAL">Manual</option>
+            <option value="AUTO">Auto-approach</option>
+          </select>
+        </label>
+        <div id="manualControls">
+          <label>Lat <input id="manLat" type="number" step="0.00001" value="18.00100"></label>
+          <label>Lon <input id="manLon" type="number" step="0.00001" value="82.00100"></label>
+          <label>Speed km/h <input id="manSpeed" type="number" step="0.5" value="10"></label>
+          <button id="applyManual">Apply</button>
+        </div>
+        <button id="toggleOffline">Simulate B Offline</button>
+      </div>
+    </section>
+
+    <section class="panel risk-panel">
+      <h2>Risk Assessment</h2>
+      <div id="riskLevel" class="risk-badge risk-safe">SAFE</div>
+      <table class="kv">
+        <tr><td>Distance A↔B</td><td id="riskDistance">-</td></tr>
+        <tr><td>Relative movement</td><td id="riskMovement">-</td></tr>
+        <tr><td>Score</td><td id="riskScore">-</td></tr>
+        <tr><td>Recommended action</td><td id="riskAction">-</td></tr>
+        <tr><td>Recommended speed</td><td id="riskSpeed">-</td></tr>
+        <tr><td>Steering guidance</td><td id="riskSteering">-</td></tr>
+      </table>
+      <div id="riskReasons" class="reasons"></div>
+      <div id="zoneAlert" class="zone-alert hidden">⚠ ACTIVE RISK ZONE</div>
+    </section>
+
+    <section class="panel voice-panel">
+      <h2>Driver Voice Guidance</h2>
+      <div class="controls">
+        <label>Language:
+          <select id="voiceLangSelect">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+          </select>
+        </label>
+        <label class="voice-toggle-row">
+          <input type="checkbox" id="voiceEnabledCheck" checked> Voice alerts ON
+        </label>
+        <button id="testVoiceBtn">Test Voice</button>
+      </div>
+      <div id="voiceCaption" class="voice-caption">Voice guidance ready.</div>
+    </section>
+
+    <section class="panel env-panel">
+      <h2>Environment (Demo Input)</h2>
+      <div class="controls">
+        <label>Fog severity:
+          <select id="fogSelect">
+            <option value="NONE">None</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+        </label>
+      </div>
+      <div id="fogBadge" class="fog-badge fog-NONE">FOG: NONE</div>
+      <div class="env-note">Manually set for this demo. NETRA has no physical fog sensor
+        installed - a real fog/visibility sensor (e.g. thermal camera + OpenCV) is an
+        optional future pilot feature, not part of this prototype.</div>
+    </section>
+
+    <section class="panel events-panel">
+      <h2>Event History</h2>
+      <table class="events" id="eventsTable">
+        <thead><tr><th>Time</th><th>Vehicle</th><th>Type</th><th>Risk</th><th>Distance</th><th>Reason</th></tr></thead>
+        <tbody id="eventsBody"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/voice.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

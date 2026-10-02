@@ -1,11 +1,3 @@
-<p align="center">
-  <img
-    src="assets/SIH logo.png"
-    alt="Smart India Hackathon"
-    width="220"
-  />
-</p>
-
 # NETRA - Networked Environment, Terrain and Radar Awareness
 * Networked → vehicle-to-vehicle / vehicle-to-system communication
 * Environment → fog and low-visibility conditions

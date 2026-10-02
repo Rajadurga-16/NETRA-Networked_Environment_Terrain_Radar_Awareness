@@ -1,6 +1,6 @@
 <p align="center">
   <img
-    src="assets/SIHlogo.png"
+    src="assets/SIH logo.png"
     alt="Smart India Hackathon"
     width="220"
   />

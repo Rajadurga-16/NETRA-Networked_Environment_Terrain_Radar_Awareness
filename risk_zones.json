@@ -1,0 +1,22 @@
+[
+  {
+    "zone_id": "ZONE_01",
+    "name": "Blind Curve - Haul Road 3",
+    "latitude": 18.00010,
+    "longitude": 82.00010,
+    "radius_m": 50,
+    "hazard_type": "BLIND_CURVE",
+    "severity": "HIGH",
+    "recommended_speed": 15
+  },
+  {
+    "zone_id": "ZONE_02",
+    "name": "Loading Point Approach",
+    "latitude": 18.00250,
+    "longitude": 82.00250,
+    "radius_m": 40,
+    "hazard_type": "CONGESTION",
+    "severity": "MEDIUM",
+    "recommended_speed": 20
+  }
+]
